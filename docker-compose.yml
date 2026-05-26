@@ -1,0 +1,62 @@
+services:
+  registry-service:
+    build:
+      context: ./registry-service
+      dockerfile: Dockerfile
+    container_name: registry-service
+    working_dir: /var/www/html
+    volumes:
+      - ./registry-service:/var/www/html
+    command: php artisan serve --host=0.0.0.0 --port=8000
+    ports:
+      - "8000:8000"
+    networks:
+      - obs-network
+
+  api-gateway:
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    container_name: api-gateway
+    working_dir: /var/www/html
+    volumes:
+      - ./api-gateway:/var/www/html
+    command: php artisan serve --host=0.0.0.0 --port=8001
+    ports:
+      - "8001:8001"
+    networks:
+      - obs-network
+
+  student-service:
+    build:
+      context: ./student-service
+      dockerfile: Dockerfile
+    container_name: student-service
+    working_dir: /var/www/html
+    volumes:
+      - ./student-service:/var/www/html
+    command: sh -c "php artisan discovery:heartbeat & php artisan serve --host=0.0.0.0 --port=8002"
+    ports:
+      - "8002:8002"
+    networks:
+      - obs-network
+
+  course-service:
+    build:
+      context: ./course-service
+      dockerfile: Dockerfile
+    container_name: course-service
+    working_dir: /var/www/html
+    volumes:
+      - ./course-service:/var/www/html
+    command: sh -c "php artisan discovery:heartbeat & php artisan serve --host=0.0.0.0 --port=8003"
+    ports:
+      - "8003:8003"
+    networks:
+      - obs-network
+
+networks:
+  obs-network:
+    driver: bridge
+
+    
